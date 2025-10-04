@@ -33,3 +33,5 @@ model-assets/
 *.pytest_cache
 *.coverage
 *coverage.xml
+
+my-task/
