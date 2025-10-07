@@ -1,6 +1,6 @@
 """
 医疗数据清洗模块
-专门用于处理病理教科书等医疗专业素材的数据清洗
+专门用于处理病理教科书等医疗专业素材的数据清洗 
 """
 
 import re
@@ -82,18 +82,18 @@ class MedicalDataCleaner:
                 }
             }
             
-            logger.info(f"医疗文本清洗完成，质量评分: {quality_score}")
+            print(f"医疗文本清洗完成，质量评分: {quality_score}")
             return result
             
         except Exception as e:
-            logger.error(f"医疗文本清洗失败: {e}")
+            print(f"医疗文本清洗失败: {e}")
             return {
-                'success': False,
-                'error': str(e),
-                'cleaned_text': text,
-                'medical_terms': [],
-                'segments': [],
-                'quality_score': 0.0
+                "success": False,
+                "error": str(e),
+                "cleaned_text": text,
+                "quality_score": 0.0,
+                "medical_terms": [],
+                "cleaning_stats": {}
             }
     
     def _remove_noise(self, text: str) -> str:
@@ -208,7 +208,7 @@ class MedicalDataCleaner:
                 result['file_index'] = i + 1
                 
                 results.append(result)
-                logger.info(f"已处理文件 {i+1}/{total_files}: {file_path}")
+                print(f"已处理文件 {i+1}/{total_files}: {file_path}")
                 
             except Exception as e:
                 error_result = {
@@ -218,7 +218,7 @@ class MedicalDataCleaner:
                     'error': str(e)
                 }
                 results.append(error_result)
-                logger.error(f"处理文件失败 {file_path}: {e}")
+                print(f"处理文件失败 {file_path}: {e}")
         
         # 统计结果
         successful = sum(1 for r in results if r.get('success', False))

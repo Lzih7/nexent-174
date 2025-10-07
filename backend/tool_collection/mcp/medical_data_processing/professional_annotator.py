@@ -10,7 +10,6 @@ import json
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-
 class MedicalProfessionalAnnotator:
     """医疗专业标注器"""
     
@@ -108,11 +107,11 @@ class MedicalProfessionalAnnotator:
                 'timestamp': datetime.now().isoformat()
             }
             
-            logger.info(f"医疗内容标注完成，共生成 {result['annotation_stats']['total_annotations']} 个标注")
+            print(f"医疗内容标注完成，共生成 {result['annotation_stats']['total_annotations']} 个标注")
             return result
             
         except Exception as e:
-            logger.error(f"医疗内容标注失败: {e}")
+            print(f"医疗内容标注失败: {e}")
             return {
                 'success': False,
                 'error': str(e),

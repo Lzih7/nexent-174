@@ -1,32 +1,31 @@
 """
-病理学数据处理器
-专门处理病理教科书等医疗专业素材
+病理教科书处理模块
+专门用于处理病理学教科书内容
 """
 
-import logging
-import json
 import re
-from typing import Dict, List, Any, Optional, Tuple
+import logging
+from typing import Dict, List, Any, Optional
+import json
+from datetime import datetime
 from pathlib import Path
-import asyncio
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 @dataclass
 class PathologyDocument:
-    """病理学文档数据结构"""
+    """病理文档数据结构"""
     title: str
     content: str
-    chapter: str
-    section: str
+    section_type: str
     medical_terms: List[str]
     diseases: List[str]
-    histological_features: List[str]
+    histology_features: List[str]
     source_file: str
-    page_number: Optional[int] = None
+    annotations: Dict[str, Any] = None
 
-class PathologyDataProcessor:
+class MedicalPathologyProcessor:
     """病理学数据处理器"""
     
     def __init__(self):
@@ -104,7 +103,7 @@ class PathologyDataProcessor:
             处理后的结构化数据
         """
         try:
-            logger.info(f"开始处理病理教科书: {file_path}")
+            print(f"开始处理病理教科书: {file_path}")
             
             # 1. 读取和解析文档
             raw_content = await self._read_document(file_path)
@@ -125,11 +124,11 @@ class PathologyDataProcessor:
             else:
                 raise ValueError(f"不支持的输出格式: {output_format}")
             
-            logger.info(f"病理教科书处理完成，生成 {len(result.get('documents', []))} 个文档单元")
+            print(f"病理教科书处理完成，生成 {len(result.get('documents', []))} 个文档单元")
             return result
             
         except Exception as e:
-            logger.error(f"处理病理教科书失败: {e}")
+            print(f"处理病理教科书失败: {e}")
             return {
                 "success": False,
                 "error": str(e),

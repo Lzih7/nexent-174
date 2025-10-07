@@ -1,27 +1,24 @@
 """
-医疗知识标注器
-对医疗文本进行专业标注和语义增强
+医疗知识标注模块
+用于对医疗文本进行知识标注
 """
 
-import logging
-import json
 import re
-from typing import Dict, List, Any, Optional, Set, Tuple
-from dataclasses import dataclass
+import logging
+from typing import Dict, List, Any, Optional, Tuple, Set
+import json
+from datetime import datetime
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
-
 class AnnotationType(Enum):
     """标注类型枚举"""
-    MEDICAL_TERM = "medical_term"
     DISEASE = "disease"
-    SYMPTOM = "symptom"
-    TREATMENT = "treatment"
     ANATOMY = "anatomy"
     PATHOLOGY = "pathology"
     DIAGNOSTIC_METHOD = "diagnostic_method"
-    MEDICATION = "medication"
+    TREATMENT = "treatment"
 
 @dataclass
 class MedicalAnnotation:
@@ -31,7 +28,8 @@ class MedicalAnnotation:
     end_pos: int
     annotation_type: AnnotationType
     confidence: float
-    metadata: Dict[str, Any]
+    context: str = ""
+    metadata: Dict[str, Any] = None
 
 class MedicalKnowledgeAnnotator:
     """医疗知识标注器"""
@@ -113,7 +111,7 @@ class MedicalKnowledgeAnnotator:
             标注结果
         """
         try:
-            logger.info(f"开始标注医疗文本，长度: {len(text)}")
+            print(f"开始标注医疗文本，长度: {len(text)}")
             
             if annotation_types is None:
                 annotation_types = list(AnnotationType)
@@ -155,11 +153,11 @@ class MedicalKnowledgeAnnotator:
                 "statistics": statistics
             }
             
-            logger.info(f"医疗文本标注完成，生成 {len(merged_annotations)} 个标注")
+            print(f"医疗文本标注完成，生成 {len(merged_annotations)} 个标注")
             return result
             
         except Exception as e:
-            logger.error(f"医疗文本标注失败: {e}")
+            print(f"医疗文本标注失败: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -309,7 +307,7 @@ class MedicalKnowledgeAnnotator:
         results = []
         
         for i, doc in enumerate(documents):
-            logger.info(f"标注文档 {i+1}/{len(documents)}")
+            print(f"标注文档 {i+1}/{len(documents)}")
             result = await self.annotate_medical_text(doc)
             results.append(result)
         

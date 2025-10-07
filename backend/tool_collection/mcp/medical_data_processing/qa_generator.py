@@ -1,16 +1,13 @@
 """
-医疗Q&A数据集生成模块
-基于标注后的医疗数据生成高质量的问答对
+医疗Q&A数据集生成模块 
+基于标注后的医疗数据生成高质量的问答对.
 """
 
-import logging
 from typing import Dict, List, Any, Optional, Tuple
 import re
 import json
 import random
 from datetime import datetime
-
-logger = logging.getLogger(__name__)
 
 class MedicalQAGenerator:
     """医疗Q&A数据集生成器"""
@@ -76,7 +73,7 @@ class MedicalQAGenerator:
         }
     
     def generate_qa_dataset(self, annotated_content: Dict[str, Any], 
-                          qa_count: int = 10) -> Dict[str, Any]:
+                      qa_count: int = 10) -> Dict[str, Any]:
         """生成Q&A数据集
         
         Args:
@@ -93,6 +90,12 @@ class MedicalQAGenerator:
             annotations = annotated_content.get('annotations', {})
             content = annotated_content.get('structured_annotation', {}).get('content_summary', '')
             
+            # 检查内容长度，如果太长则进行截断
+            max_content_length = 15000  # 限制内容长度以避免token超限
+            if len(content) > max_content_length:
+                print(f"内容过长({len(content)}字符)，截断到{max_content_length}字符")
+                content = content[:max_content_length] + "..."
+            
             # 1. 提取关键信息
             key_info = self._extract_key_information(annotations)
             
@@ -103,8 +106,13 @@ class MedicalQAGenerator:
             question_types = ['definition', 'symptoms', 'diagnosis', 'treatment', 'pathology', 'differential']
             type_counts = self._distribute_question_types(qa_count, len(question_types))
             
+            # 限制每次生成的数量以避免token超限
+            max_pairs_per_type = 3
+            
             for question_type, count in zip(question_types, type_counts):
-                pairs = self._generate_qa_by_type(question_type, key_info, content, count)
+                # 限制每种类型的生成数量
+                limited_count = min(count, max_pairs_per_type)
+                pairs = self._generate_qa_by_type(question_type, key_info, content, limited_count)
                 qa_pairs.extend(pairs)
             
             # 3. 随机打乱并限制数量
@@ -130,11 +138,11 @@ class MedicalQAGenerator:
                 'quality_metrics': self._calculate_quality_metrics(optimized_pairs)
             }
             
-            logger.info(f"成功生成 {len(optimized_pairs)} 个Q&A对")
+            print(f"成功生成 {len(optimized_pairs)} 个Q&A对")
             return result
             
         except Exception as e:
-            logger.error(f"Q&A数据集生成失败: {e}")
+            print(f"Q&A数据集生成失败: {e}")
             return {
                 'success': False,
                 'error': str(e),
@@ -246,7 +254,7 @@ class MedicalQAGenerator:
                 qa_pairs.append(qa_pair)
                 
             except Exception as e:
-                logger.warning(f"生成{question_type}类型Q&A失败: {e}")
+                print(f"生成{question_type}类型Q&A失败: {e}")
                 continue
         
         return qa_pairs

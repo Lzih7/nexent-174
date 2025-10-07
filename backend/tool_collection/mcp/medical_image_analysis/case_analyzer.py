@@ -26,10 +26,7 @@ class MedicalCaseAnalyzer:
             try:
                 # 添加调试日志 - 检查 tenant_id
                 logger.info(f"[DEBUG] 开始初始化VLM模型，tenant_id: {self.tenant_id}")
-                logger.info(f"[DEBUG] tenant_id 类型: {type(self.tenant_id)}")
-                logger.info(f"[DEBUG] tenant_id 是否为空: {self.tenant_id is None}")
-                logger.info(f"[DEBUG] MODEL_CONFIG_MAPPING['vlm']: {MODEL_CONFIG_MAPPING.get('vlm', 'KEY_NOT_FOUND')}")
-                
+               
                 # 获取 VLM 模型配置
                 vlm_config = tenant_config_manager.get_model_config(
                     MODEL_CONFIG_MAPPING["vlm"], 
@@ -38,15 +35,8 @@ class MedicalCaseAnalyzer:
                 
                 # 添加调试日志 - 检查配置获取结果
                 logger.info(f"[DEBUG] 获取到的VLM配置: {vlm_config}")
-                logger.info(f"[DEBUG] 配置是否为空: {vlm_config is None}")
                 if vlm_config:
                     logger.info(f"[DEBUG] 配置内容: {list(vlm_config.keys()) if isinstance(vlm_config, dict) else 'NOT_DICT'}")
-                
-                if not vlm_config:
-                    # 添加更详细的错误信息
-                    logger.error(f"[DEBUG] 未找到租户 {self.tenant_id} 的 VLM 模型配置")
-                    logger.error(f"[DEBUG] 请检查数据库中 tenant_config_t 表是否存在 tenant_id='{self.tenant_id}' 且 config_key='{MODEL_CONFIG_MAPPING['vlm']}' 的记录")
-                    raise ValueError(f"未找到租户 {self.tenant_id} 的 VLM 模型配置")
                 
                 # 使用 get_model_name_from_config 函数正确组合模型名称
                 model_name = get_model_name_from_config(vlm_config)
@@ -60,15 +50,6 @@ class MedicalCaseAnalyzer:
                 logger.info(f"[DEBUG] api_key: {'***' if api_key else None}")
                 logger.info(f"[DEBUG] base_url: {base_url}")
                 
-                if not model_name:
-                    logger.error("[DEBUG] VLM 模型配置中缺少 model_name")
-                    raise ValueError("VLM 模型配置中缺少 model_name")
-                if not api_key:
-                    logger.error("[DEBUG] VLM 模型配置中缺少 api_key")
-                    raise ValueError("VLM 模型配置中缺少 api_key")
-                if not base_url:
-                    logger.error("[DEBUG] VLM 模型配置中缺少 base_url")
-                    raise ValueError("VLM 模型配置中缺少 base_url")
                 
                 # 初始化 VLM 模型 - 使用正确的参数
                 logger.info(f"[DEBUG] 开始初始化 OpenAIVLModel")
