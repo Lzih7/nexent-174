@@ -14,7 +14,7 @@ from sqlalchemy import select, desc
 from consts.const import DEFAULT_TENANT_ID
 
 # Create MCP server 
-local_mcp_service = FastMCP("local")
+local_mcp_service = FastMCP("local")  
 
 @local_mcp_service.tool(name="breast_histology_analyzer", 
                         description="专业的乳腺组织学显微镜图像分析工具，支持乳腺病理切片的智能分析和诊断辅助")
